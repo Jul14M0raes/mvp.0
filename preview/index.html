@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daily Quiz MVP - Preview</title>
+    <style>
+      :root {
+        --pink: #ec008c;
+        --green: #00e30f;
+        --navy: #130b5c;
+        --ink: #101023;
+        --mist: #f5f6fa;
+        --line: #e7e8ef;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 18% 0%, rgba(236, 0, 140, 0.1), transparent 28%),
+          radial-gradient(circle at 88% 10%, rgba(0, 227, 15, 0.12), transparent 24%),
+          var(--mist);
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      button {
+        border: 0;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .shell {
+        min-height: 100vh;
+        padding: 20px 16px;
+      }
+
+      .phone {
+        display: flex;
+        flex-direction: column;
+        width: min(100%, 430px);
+        height: min(760px, calc(100svh - 40px));
+        min-height: 680px;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 28px;
+        background: #fff;
+        box-shadow: 0 18px 50px rgba(19, 11, 92, 0.1);
+      }
+
+      .status {
+        display: flex;
+        height: 32px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        color: #000;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .status-icons {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .dot,
+      .pill {
+        display: block;
+        height: 10px;
+        background: #000;
+      }
+
+      .dot {
+        width: 12px;
+        border-radius: 3px;
+      }
+
+      .pill {
+        width: 22px;
+        border-radius: 999px;
+      }
+
+      .screen {
+        display: none;
+        flex: 1;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 32px 20px 24px;
+      }
+
+      .screen.active {
+        display: flex;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .metric,
+      .panel {
+        border-radius: 22px;
+        background: #fff;
+      }
+
+      .metric {
+        border: 1px solid #f0f1f5;
+        padding: 16px;
+        box-shadow: 0 1px 8px rgba(16, 16, 35, 0.04);
+      }
+
+      .metric-icon {
+        display: flex;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+      }
+
+      .pink {
+        background: var(--pink);
+      }
+
+      .green {
+        background: var(--green);
+      }
+
+      .metric-label {
+        margin: 16px 0 4px;
+        color: #8d93a5;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .metric-value {
+        margin: 0;
+        color: var(--navy);
+        font-size: 24px;
+        font-weight: 900;
+      }
+
+      .eyebrow {
+        margin: 40px 0 0;
+        color: rgba(19, 11, 92, 0.55);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2 {
+        color: var(--navy);
+        font-weight: 900;
+        line-height: 1.12;
+      }
+
+      h1 {
+        margin: 8px 0 0;
+        font-size: 32px;
+      }
+
+      h2 {
+        margin: 32px 0 0;
+        min-height: 96px;
+        text-align: center;
+        font-size: 24px;
+      }
+
+      .copy {
+        margin: 12px 0 0;
+        color: #626b7d;
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .panel {
+        margin-top: 32px;
+        padding: 16px;
+        background: var(--mist);
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--navy);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .progress {
+        height: 10px;
+        margin-top: 12px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #dfe2ea;
+      }
+
+      .progress span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--green);
+        transition: width 0.35s ease;
+      }
+
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .tile {
+        height: 56px;
+        border: 4px solid #d9dbe2;
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .tile.done {
+        border-color: var(--green);
+      }
+
+      .tile.next {
+        border-color: var(--pink);
+      }
+
+      .primary,
+      .secondary {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 8px;
+        font-weight: 900;
+        transition: transform 0.15s ease;
+      }
+
+      .primary:active,
+      .secondary:active,
+      .option:active {
+        transform: scale(0.98);
+      }
+
+      .primary {
+        height: 56px;
+        margin-top: auto;
+        background: var(--navy);
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(19, 11, 92, 0.2);
+      }
+
+      .secondary {
+        height: 48px;
+        margin-top: 12px;
+        border: 2px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        font-size: 14px;
+      }
+
+      .quiz {
+        padding-top: 12px;
+      }
+
+      .chip-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 40px;
+      }
+
+      .chip {
+        border-radius: 999px;
+        background: rgba(236, 0, 140, 0.1);
+        color: var(--pink);
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .xp-hint {
+        color: #9aa1af;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .options {
+        display: grid;
+        gap: 12px;
+        margin-top: 32px;
+      }
+
+      .option {
+        display: flex;
+        min-height: 64px;
+        align-items: center;
+        justify-content: space-between;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 0 16px;
+        color: var(--ink);
+        text-align: left;
+        font-size: 14px;
+        font-weight: 900;
+        transition:
+          background 0.2s ease,
+          border 0.2s ease,
+          color 0.2s ease,
+          transform 0.15s ease;
+      }
+
+      .option.correct {
+        border-color: var(--green);
+        background: var(--green);
+        color: #fff;
+      }
+
+      .option.wrong {
+        border-color: var(--pink);
+        background: var(--pink);
+        color: #fff;
+      }
+
+      .question-row {
+        display: flex;
+        min-height: 96px;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 32px;
+      }
+
+      .question-row h2 {
+        flex: 1;
+        margin-top: 0;
+      }
+
+      .listen {
+        display: flex;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--navy);
+        font-size: 20px;
+        font-weight: 900;
+      }
+
+      .option-card {
+        display: grid;
+        min-height: 80px;
+        grid-template-columns: 64px 1fr 48px;
+        align-items: stretch;
+        overflow: hidden;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        box-shadow: 0 1px 8px rgba(16, 16, 35, 0.04);
+      }
+
+      .option-card.correct {
+        border-color: var(--green);
+        background: var(--green);
+        color: #fff;
+      }
+
+      .option-card.wrong {
+        border-color: var(--pink);
+        background: var(--pink);
+        color: #fff;
+      }
+
+      .visual {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--mist);
+        color: var(--navy);
+        font-size: 28px;
+        font-weight: 900;
+      }
+
+      .correct .visual,
+      .wrong .visual {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      .answer-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: transparent;
+        color: inherit;
+        padding: 0 16px;
+        text-align: left;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .listen.compact {
+        width: 48px;
+        height: 100%;
+        border-width: 0 0 0 1px;
+        border-color: rgba(16, 16, 35, 0.12);
+        border-radius: 0;
+      }
+
+      .bottom-mark {
+        width: 96px;
+        height: 40px;
+        margin: auto 0 0 auto;
+        border-radius: 8px;
+        background: #dfe2ea;
+      }
+
+      .trophy {
+        display: flex;
+        width: 96px;
+        height: 96px;
+        align-items: center;
+        justify-content: center;
+        margin: 8px auto 0;
+        border-radius: 999px;
+        background: var(--green);
+        color: #fff;
+        font-size: 42px;
+        font-weight: 900;
+        box-shadow: 0 14px 24px rgba(0, 227, 15, 0.22);
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .result-title {
+        margin-top: 28px;
+      }
+
+      .result-title .eyebrow {
+        margin-top: 0;
+        color: var(--pink);
+      }
+
+      @media (min-width: 720px) {
+        .shell {
+          padding-block: 28px;
+        }
+
+        .phone {
+          height: 760px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <div class="phone">
+        <div class="status">
+          <span>9:41</span>
+          <div class="status-icons">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="pill"></span>
+          </div>
+        </div>
+
+        <section class="screen active" id="home-screen">
+          <div class="grid">
+            <article class="metric">
+              <div class="metric-icon pink">XP</div>
+              <p class="metric-label">XP total</p>
+              <p class="metric-value" id="home-xp">0</p>
+            </article>
+            <article class="metric">
+              <div class="metric-icon green">🔥</div>
+              <p class="metric-label">Ofensiva</p>
+              <p class="metric-value" id="home-streak">0 dias</p>
+            </article>
+          </div>
+
+          <p class="eyebrow">Atividade diaria</p>
+          <h1 id="daily-title">Aprenda em poucos minutos.</h1>
+          <p class="copy">Complete 4 perguntas, ganhe XP e mantenha sua sequencia ativa.</p>
+
+          <div class="panel">
+            <div class="row">
+              <span>Progresso de hoje</span>
+              <span id="daily-percent">0%</span>
+            </div>
+            <div class="progress"><span id="daily-bar"></span></div>
+            <div class="tiles" id="home-tiles"></div>
+          </div>
+
+          <button class="primary" id="start-button">Fazer atividade do dia ›</button>
+        </section>
+
+        <section class="screen quiz" id="quiz-screen">
+          <div class="progress"><span id="quiz-bar"></span></div>
+          <div class="chip-row">
+            <span class="chip" id="question-count">Questao 1/4</span>
+            <span class="xp-hint">+25 XP</span>
+          </div>
+          <div class="question-row">
+            <h2 id="question-prompt"></h2>
+            <button class="listen" id="question-audio" type="button" aria-label="Ouvir pergunta">▶</button>
+          </div>
+          <div class="options" id="options"></div>
+          <div class="bottom-mark"></div>
+        </section>
+
+        <section class="screen" id="result-screen">
+          <div class="trophy">🏆</div>
+          <div class="result-title center">
+            <p class="eyebrow">Parabens!</p>
+            <h1>Atividade concluida</h1>
+            <p class="copy" id="result-copy"></p>
+          </div>
+
+          <div class="grid" style="margin-top: 32px">
+            <article class="metric">
+              <div class="metric-icon pink">XP</div>
+              <p class="metric-label">XP ganho</p>
+              <p class="metric-value" id="earned-xp">+0</p>
+            </article>
+            <article class="metric">
+              <div class="metric-icon green">🔥</div>
+              <p class="metric-label">Ofensiva</p>
+              <p class="metric-value" id="result-streak">0 dias</p>
+            </article>
+          </div>
+
+          <div class="panel">
+            <div class="row">
+              <span>Aproveitamento</span>
+              <span id="accuracy-percent">0%</span>
+            </div>
+            <div class="progress"><span id="accuracy-bar"></span></div>
+          </div>
+
+          <button class="primary" id="home-button">Voltar para inicio</button>
+          <button class="secondary" id="restart-button">Refazer quiz</button>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const STORAGE_KEY = "daily-quiz-progress";
+      const XP_PER_CORRECT = 25;
+      const CYCLE_START_DATE = "2026-05-17";
+      const shortTexts = {
+        "Qual pratica ajuda a fixar melhor um conteudo novo?": "O que ajuda a aprender melhor?",
+        "Revisar em pequenos blocos": "Revisar",
+        "Estudar tudo uma vez": "Ver uma vez",
+        "Pular exercicios": "Pular",
+        "Ler sem pausas": "Ler sem parar",
+        "O que significa XP nesta jornada?": "O que e XP?",
+        "Pontos de experiencia": "Pontos",
+        "Tempo de tela": "Tempo",
+        "Nivel bloqueado": "Nivel travado",
+        "Moeda paga": "Compra",
+        "Qual acao fortalece uma ofensiva diaria?": "Como manter a ofensiva?",
+        "Concluir a atividade do dia": "Concluir hoje",
+        "Trocar de tema": "Trocar tema",
+        "Fechar o app": "Fechar",
+        "Errar de proposito": "Errar",
+        "Uma atividade curta deve priorizar:": "Uma atividade curta precisa de:",
+        "Clareza e ritmo": "Clareza",
+        "Muitas telas": "Muitas telas",
+        "Cadastro longo": "Cadastro",
+        "Ranking complexo": "Ranking",
+        "Definir uma meta pequena": "Meta pequena",
+        "Abrir muitas abas": "Muitas abas",
+        "Comecar sem objetivo": "Sem plano",
+        "Concluir a pratica diaria": "Concluir",
+        "Trocar de assunto sempre": "Trocar sempre",
+        "Evitar feedback": "Sem retorno",
+        "Parar no primeiro erro": "Parar",
+        "Perguntas curtas": "Pergunta curta",
+        "Textos longos": "Texto longo",
+        "Cadastro obrigatorio": "Cadastro",
+        "Usar o erro para revisar": "Revisar",
+        "Desistir da sequencia": "Desistir",
+        "Apagar o progresso": "Apagar",
+        "Repetir em dias diferentes": "Repetir",
+        "Estudar so uma vez": "Uma vez",
+        "Evitar testes": "Sem teste",
+        "Ler sem responder": "So ler",
+        "Consistencia diaria": "Todo dia",
+        "Competicao obrigatoria": "Competir",
+        "Compra de moedas": "Comprar",
+        "Troca de senha": "Senha",
+        "Clara e imediata": "Clara",
+        "Confusa e escondida": "Escondida",
+        "Lenta e incerta": "Demorada",
+        "Sempre bloqueada": "Travada",
+        "Retorno diario": "Voltar todo dia",
+        "Cor do icone": "Cor do icone",
+        "Tamanho do logo": "Logo grande",
+        "Numero de menus": "Mais menus",
+        "Rapida de concluir": "Rapida",
+        "Cheia de etapas": "Cheia de etapas",
+        "Dificil de abrir": "Dificil",
+        "Sem feedback": "Sem retorno",
+        "Responder perguntas": "Responder",
+        "Apenas assistir": "So assistir",
+        "Ignorar exemplos": "Ignorar",
+        "Soma acumulada": "Soma de dias",
+        "Apenas o dia atual": "So hoje",
+        "Valor aleatorio": "Aleatorio",
+        "Tempo offline": "Offline",
+        "Fluxo com poucas telas": "Poucas telas",
+        "Login longo": "Login longo",
+        "Chat obrigatorio": "Chat obrigatorio",
+        "Voltar ao primeiro dia": "Voltar ao dia 1",
+        "Apagar o XP": "Apagar XP",
+        "Parar o app": "Parar",
+        "Bloquear o quiz": "Bloquear",
+        "Somar apenas a primeira conclusao do dia": "Somar 1 vez",
+        "Somar sem limite": "Sem limite",
+        "Zerar ao refazer": "Zerar",
+        "Ignorar acertos": "Ignorar",
+        "Data da ultima atividade": "Data do dia",
+        "Cor do botao": "Cor do botao",
+        "Largura da tela": "Tela",
+        "Nome do navegador": "Navegador",
+        "Voltar amanha": "Voltar amanha",
+        "Criar outra conta": "Criar conta",
+        "Limpar dados": "Limpar dados",
+        "Fechar sem ver resultado": "Fechar sem ver",
+      };
+      const dailyQuestionSets = [
+        [
+          {
+            prompt: "Qual pratica ajuda a fixar melhor um conteudo novo?",
+            options: ["Revisar em pequenos blocos", "Estudar tudo uma vez", "Pular exercicios", "Ler sem pausas"],
+            answer: 0,
+          },
+          {
+            prompt: "O que significa XP nesta jornada?",
+            options: ["Pontos de experiencia", "Tempo de tela", "Nivel bloqueado", "Moeda paga"],
+            answer: 0,
+          },
+          {
+            prompt: "Qual acao fortalece uma ofensiva diaria?",
+            options: ["Concluir a atividade do dia", "Trocar de tema", "Fechar o app", "Errar de proposito"],
+            answer: 0,
+          },
+          {
+            prompt: "Uma atividade curta deve priorizar:",
+            options: ["Clareza e ritmo", "Muitas telas", "Cadastro longo", "Ranking complexo"],
+            answer: 0,
+          },
+        ],
+        [
+          {
+            prompt: "Antes de estudar, qual atitude melhora o foco?",
+            options: ["Definir uma meta pequena", "Abrir muitas abas", "Ignorar o tempo", "Comecar sem objetivo"],
+            answer: 0,
+          },
+          {
+            prompt: "Qual e um bom sinal de progresso?",
+            options: ["Concluir a pratica diaria", "Trocar de assunto sempre", "Evitar feedback", "Parar no primeiro erro"],
+            answer: 0,
+          },
+          {
+            prompt: "O que torna um quiz mais facil de continuar?",
+            options: ["Perguntas curtas", "Textos longos", "Cadastro obrigatorio", "Muitas regras"],
+            answer: 0,
+          },
+          {
+            prompt: "Quando errar uma pergunta, o melhor e:",
+            options: ["Usar o erro para revisar", "Desistir da sequencia", "Pular o tema", "Apagar o progresso"],
+            answer: 0,
+          },
+        ],
+        [
+          {
+            prompt: "Qual habito ajuda na memoria de longo prazo?",
+            options: ["Repetir em dias diferentes", "Estudar so uma vez", "Evitar testes", "Ler sem responder"],
+            answer: 0,
+          },
+          {
+            prompt: "A ofensiva existe para estimular:",
+            options: ["Consistencia diaria", "Competicao obrigatoria", "Compra de moedas", "Troca de senha"],
+            answer: 0,
+          },
+          {
+            prompt: "Uma recompensa simples deve ser:",
+            options: ["Clara e imediata", "Confusa e escondida", "Lenta e incerta", "Sempre bloqueada"],
+            answer: 0,
+          },
+          {
+            prompt: "Qual metrica ajuda a validar engajamento?",
+            options: ["Retorno diario", "Cor do icone", "Tamanho do logo", "Numero de menus"],
+            answer: 0,
+          },
+        ],
+        [
+          {
+            prompt: "Para manter ritmo, a atividade diaria deve ser:",
+            options: ["Rapida de concluir", "Cheia de etapas", "Dificil de abrir", "Sem feedback"],
+            answer: 0,
+          },
+          {
+            prompt: "Qual opcao representa aprendizado ativo?",
+            options: ["Responder perguntas", "Apenas assistir", "Fechar o app", "Ignorar exemplos"],
+            answer: 0,
+          },
+          {
+            prompt: "O XP total deve mostrar:",
+            options: ["Soma acumulada", "Apenas o dia atual", "Valor aleatorio", "Tempo offline"],
+            answer: 0,
+          },
+          {
+            prompt: "Qual detalhe reduz friccao no MVP?",
+            options: ["Fluxo com poucas telas", "Login longo", "Ranking complexo", "Chat obrigatorio"],
+            answer: 0,
+          },
+        ],
+        [
+          {
+            prompt: "Depois de 5 dias, o ciclo de conteudo deve:",
+            options: ["Voltar ao primeiro dia", "Apagar o XP", "Parar o app", "Bloquear o quiz"],
+            answer: 0,
+          },
+          {
+            prompt: "Qual comportamento protege o XP acumulado?",
+            options: ["Somar apenas a primeira conclusao do dia", "Somar sem limite", "Zerar ao refazer", "Ignorar acertos"],
+            answer: 0,
+          },
+          {
+            prompt: "Qual estado local registra a ultima conclusao?",
+            options: ["Data da ultima atividade", "Cor do botao", "Largura da tela", "Nome do navegador"],
+            answer: 0,
+          },
+          {
+            prompt: "O melhor proximo passo apos concluir e:",
+            options: ["Voltar amanha", "Criar outra conta", "Limpar dados", "Fechar sem ver resultado"],
+            answer: 0,
+          },
+        ],
+      ];
+
+      dailyQuestionSets.forEach((set) => {
+        set.forEach((question) => {
+          question.prompt = shortTexts[question.prompt] || question.prompt;
+          question.options = question.options.map((label) => ({
+            label: shortTexts[label] || label,
+            visual: visualForLabel(label),
+          }));
+        });
+      });
+
+      let progress = loadProgress();
+      let currentDateKey = dateKey();
+      let questions = questionsForDate(currentDateKey);
+      let currentQuestion = 0;
+      let correctAnswers = 0;
+
+      const screens = {
+        home: document.querySelector("#home-screen"),
+        quiz: document.querySelector("#quiz-screen"),
+        result: document.querySelector("#result-screen"),
+      };
+
+      document.querySelector("#start-button").addEventListener("click", startQuiz);
+      document.querySelector("#home-button").addEventListener("click", () => showScreen("home"));
+      document.querySelector("#restart-button").addEventListener("click", startQuiz);
+      document.querySelector("#question-audio").addEventListener("click", () => {
+        speakText(questions[currentQuestion].prompt);
+      });
+
+      window.setInterval(() => {
+        const nextDateKey = dateKey();
+        if (nextDateKey !== currentDateKey) {
+          currentDateKey = nextDateKey;
+          questions = questionsForDate(currentDateKey);
+          currentQuestion = 0;
+          correctAnswers = 0;
+          renderHome();
+        }
+      }, 60 * 1000);
+
+      renderHome();
+
+      function loadProgress() {
+        try {
+          return {
+            xp: 0,
+            streak: 0,
+            lastCompletedDate: null,
+            ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"),
+          };
+        } catch {
+          localStorage.removeItem(STORAGE_KEY);
+          return { xp: 0, streak: 0, lastCompletedDate: null };
+        }
+      }
+
+      function saveProgress() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+      }
+
+      function speakText(text) {
+        if (!("speechSynthesis" in window)) return;
+
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "pt-BR";
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function visualForLabel(label) {
+        const text = label.toLowerCase();
+
+        if (text.includes("revis") || text.includes("repet") || text.includes("voltar ao primeiro")) return "↻";
+        if (text.includes("xp") || text.includes("pontos") || text.includes("soma")) return "XP";
+        if (text.includes("concluir") || text.includes("responder") || text.includes("data")) return "✓";
+        if (text.includes("ofensiva") || text.includes("diari") || text.includes("amanha") || text.includes("retorno")) return "5";
+        if (text.includes("meta") || text.includes("foco")) return "◎";
+        if (text.includes("curt") || text.includes("rapida") || text.includes("poucas")) return ">";
+        if (text.includes("bloque") || text.includes("cadastro") || text.includes("login") || text.includes("senha")) return "□";
+        if (text.includes("tempo") || text.includes("long") || text.includes("demorada") || text.includes("paus")) return "○";
+        if (text.includes("clara")) return "★";
+
+        return "×";
+      }
+
+      function dateKey(date = new Date()) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+      }
+
+      function dateFromKey(key) {
+        const [year, month, day] = key.split("-").map(Number);
+
+        return new Date(year, month - 1, day);
+      }
+
+      function previousDateKey(key) {
+        const date = dateFromKey(key);
+        date.setDate(date.getDate() - 1);
+
+        return dateKey(date);
+      }
+
+      function daysBetween(startKey, endKey) {
+        const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+        return Math.round((dateFromKey(endKey).getTime() - dateFromKey(startKey).getTime()) / millisecondsPerDay);
+      }
+
+      function positiveModulo(value, divisor) {
+        return ((value % divisor) + divisor) % divisor;
+      }
+
+      function currentCycleIndex() {
+        return positiveModulo(daysBetween(CYCLE_START_DATE, currentDateKey), dailyQuestionSets.length);
+      }
+
+      function questionsForDate(key) {
+        const cycleIndex = positiveModulo(daysBetween(CYCLE_START_DATE, key), dailyQuestionSets.length);
+
+        return dailyQuestionSets[cycleIndex];
+      }
+
+      function showScreen(name) {
+        Object.values(screens).forEach((screen) => screen.classList.remove("active"));
+        screens[name].classList.add("active");
+        if (name === "home") renderHome();
+      }
+
+      function startQuiz() {
+        currentDateKey = dateKey();
+        questions = questionsForDate(currentDateKey);
+        currentQuestion = 0;
+        correctAnswers = 0;
+        showScreen("quiz");
+        renderQuestion();
+      }
+
+      function renderHome() {
+        const completedToday = progress.lastCompletedDate === currentDateKey;
+        const percent = completedToday ? 100 : 0;
+
+        document.querySelector("#home-xp").textContent = progress.xp;
+        document.querySelector("#home-streak").textContent = streakLabel(progress.streak);
+        document.querySelector("#daily-title").textContent = `Dia ${currentCycleIndex() + 1} de 5: aprenda em poucos minutos.`;
+        document.querySelector("#daily-percent").textContent = `${percent}%`;
+        document.querySelector("#daily-bar").style.width = `${percent}%`;
+        document.querySelector("#start-button").textContent = completedToday
+          ? "Refazer atividade do dia ›"
+          : "Fazer atividade do dia ›";
+
+        const tiles = document.querySelector("#home-tiles");
+        tiles.innerHTML = "";
+        for (let index = 0; index < 4; index += 1) {
+          const tile = document.createElement("span");
+          tile.className = `tile ${completedToday ? "done" : index === 0 ? "next" : ""}`;
+          tiles.appendChild(tile);
+        }
+      }
+
+      function renderQuestion(selectedIndex = null) {
+        const question = questions[currentQuestion];
+        const quizProgress = Math.round(((currentQuestion + (selectedIndex === null ? 0 : 1)) / questions.length) * 100);
+
+        document.querySelector("#quiz-bar").style.width = `${quizProgress}%`;
+        document.querySelector("#question-count").textContent = `Questao ${currentQuestion + 1}/4`;
+        document.querySelector("#question-prompt").textContent = question.prompt;
+
+        const options = document.querySelector("#options");
+        options.innerHTML = "";
+        question.options.forEach((option, index) => {
+          const card = document.createElement("div");
+          const visual = document.createElement("div");
+          const button = document.createElement("button");
+          const audio = document.createElement("button");
+          const isCorrect = selectedIndex !== null && index === question.answer;
+          const isWrong = selectedIndex === index && index !== question.answer;
+
+          card.className = `option-card ${isCorrect ? "correct" : ""} ${isWrong ? "wrong" : ""}`;
+
+          visual.className = "visual";
+          visual.textContent = option.visual;
+
+          button.className = "answer-option";
+          button.textContent = option.label;
+          button.disabled = selectedIndex !== null;
+          button.addEventListener("click", () => answerQuestion(index));
+
+          audio.className = "listen compact";
+          audio.type = "button";
+          audio.textContent = "▶";
+          audio.setAttribute("aria-label", `Ouvir resposta: ${option.label}`);
+          audio.addEventListener("click", () => speakText(option.label));
+
+          card.appendChild(visual);
+          card.appendChild(button);
+          card.appendChild(audio);
+          options.appendChild(card);
+        });
+      }
+
+      function answerQuestion(index) {
+        const isCorrect = index === questions[currentQuestion].answer;
+        if (isCorrect) correctAnswers += 1;
+        renderQuestion(index);
+
+        window.setTimeout(() => {
+          currentQuestion += 1;
+          if (currentQuestion < questions.length) {
+            renderQuestion();
+            return;
+          }
+          finishQuiz();
+        }, 650);
+      }
+
+      function finishQuiz() {
+        const today = currentDateKey;
+        const alreadyCompletedToday = progress.lastCompletedDate === today;
+        const earnedXp = alreadyCompletedToday ? 0 : Math.max(20, correctAnswers * XP_PER_CORRECT);
+        const streak =
+          alreadyCompletedToday
+            ? progress.streak
+            : progress.lastCompletedDate === previousDateKey(today)
+              ? progress.streak + 1
+              : 1;
+
+        progress = {
+          xp: progress.xp + earnedXp,
+          streak,
+          lastCompletedDate: today,
+        };
+        saveProgress();
+
+        const accuracy = Math.round((correctAnswers / questions.length) * 100);
+        document.querySelector("#result-copy").textContent =
+          earnedXp > 0
+            ? `Voce acertou ${correctAnswers} de 4 perguntas e somou mais experiencia.`
+            : `Voce acertou ${correctAnswers} de 4 perguntas. O XP de hoje ja foi recebido.`;
+        document.querySelector("#earned-xp").textContent = `+${earnedXp}`;
+        document.querySelector("#result-streak").textContent = streakLabel(progress.streak);
+        document.querySelector("#accuracy-percent").textContent = `${accuracy}%`;
+        document.querySelector("#accuracy-bar").style.width = `${accuracy}%`;
+        showScreen("result");
+      }
+
+      function streakLabel(streak) {
+        return `${streak} dia${streak === 1 ? "" : "s"}`;
+      }
+    </script>
+  </body>
+</html>
