@@ -1,5 +1,5 @@
 
-export type AnswerOption = {
+export type AnswerOptionn = {
   label: string;
   visual:
     | "study"
@@ -17,14 +17,14 @@ export type AnswerOption = {
 
 export type Question = {
   prompt: string;
-  options: AnswerOption[];
+  options: AnswerOptionn[];
   answer: number;
 };
 
 function option(
   label: string,
-  visual: AnswerOption["visual"]
-): AnswerOption {
+  visual: AnswerOptionn["visual"]
+): AnswerOptionn {
   return { label, visual };
 }
 
