@@ -2,11 +2,12 @@
 
 import { Check } from "lucide-react";
 
-import { ProgressBar } from "@/components/ui/ProgressBarr";
+import { ProgressBarr } from "@/components/ui/ProgressBar";
+import { VisualIcon } from "@/components/ui/VisualIcon";
+import { AudioButton } from "@/components/ui/AudioButton";
 
-
-import type { Question } from "@/data/questions";
-import type { AnswerOption } from "@/data/questions";
+import type { Question } from "@/app/data/questions";
+import type { AnswerOption } from "@/app/data/questions";
 
 type QuizScreenProps = {
   currentQuestion: number;
@@ -33,7 +34,7 @@ export function QuizScreen({
 
   return (
     <section className="flex flex-1 flex-col overflow-y-auto px-5 pb-6 pt-3">
-      <ProgressBar value={progress} />
+      <ProgressBarr value={progress} />
 
       <div className="mt-10 flex items-center justify-between">
         <span className="rounded-full bg-brand-pink/10 px-3 py-1 text-xs font-black text-brand-pink">

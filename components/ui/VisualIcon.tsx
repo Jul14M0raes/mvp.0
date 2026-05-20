@@ -12,7 +12,8 @@ import {
   Ban,
 } from "lucide-react";
 
-import type { AnswerOption } from "@/data/questions";
+
+import type { Question, AnswerOption } from "@/app/data/questions";
 
 type VisualIconProps = {
   visual: AnswerOption["visual"];
