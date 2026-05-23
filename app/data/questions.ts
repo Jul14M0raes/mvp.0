@@ -240,3 +240,11 @@ export const dailyQuestionSets: Question[][] = [
     },
   ],
 ];
+
+// parte que fica visivel na HomeScreen como trilha
+export const dadosDasLicoes = [
+  { id: 1, title: "Vogais básicas", color: "magenta" as const, completed: true },
+  { id: 2, title: "Vogais Básicas", color: "magenta" as const, completed: true },
+  { id: 3, title: "Ouvir e melhorar", color: "green" as const, completed: false },
+  { id: 4, title: "Consoantes Práticas", color: "green" as const, completed: false },
+];

@@ -9,7 +9,7 @@ import {
 import { HomeScreen } from "@/components/screens/HomeScreen";
 import { QuizScreen } from "@/components/screens/QuizScreen";
 import { ResultScreen } from "@/components/screens/ResultsScreen";
-
+import { dadosDasLicoes } from "./data/questions";
 import { ProgressBarr } from "@/components/ui/ProgressBar";
 import { MetricCard } from "@/components/ui/MetricCard";
 
@@ -181,7 +181,6 @@ export default function Page() {
     setSelectedOption(null);
   }
 
-
   return (
     <main className="px-4 py-5 text-brand-ink sm:px-6">
       <div className="mx-auto flex min-h-[680px] w-full max-w-[430px] flex-col overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-soft">
@@ -190,6 +189,7 @@ export default function Page() {
           <HomeScreen
             completedToday={completedToday}
             dailyCompletion={dailyCompletion}
+            lessons={dadosDasLicoes}
             dayNumber={
               positiveModulo(
                 daysBetween(CYCLE_START_DATE, currentDateKey),
@@ -220,7 +220,6 @@ export default function Page() {
             progress={progress}
             onHome={goHome}
             onRestart={startQuiz}
-            totalQuestions={questions.length}
           />
         )}
       </div>
