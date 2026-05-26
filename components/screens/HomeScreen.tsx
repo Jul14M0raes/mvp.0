@@ -81,10 +81,8 @@ export function HomeScreen({
   return (
     <section className="flex flex-1 flex-col overflow-y-auto pb-6">
       
-      {/* SEÇÃO UNIFICADA: CABEÇALHO ROSA + CALENDÁRIO */}
       <div className="bg-white rounded-t-[32px] overflow-hidden flex flex-col">
         
-        {/* Retângulo Rosa do Topo */}
         <div className="bg-brand-pink px-6 pt-10 pb-8 text-white">
           <h1 className="text-3xl font-black tracking-wide">
             Olá!
