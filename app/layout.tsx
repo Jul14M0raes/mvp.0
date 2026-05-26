@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Daily Quiz MVP",
+  title: "MVP.0 leduc",
   description: "MVP educacional gamificado com quiz diario, XP e ofensiva.",
 };
 

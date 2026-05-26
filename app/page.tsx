@@ -9,16 +9,17 @@ import {
 import { HomeScreen } from "@/components/screens/HomeScreen";
 import { QuizScreen } from "@/components/screens/QuizScreen";
 import { ResultScreen } from "@/components/screens/ResultsScreen";
-
+import { dadosDasLicoes } from "./data/questions";
 import { ProgressBarr } from "@/components/ui/ProgressBar";
 import { MetricCard } from "@/components/ui/MetricCard";
 
 type Screen = "home" | "quiz" | "result";
 
+// 1. ATUALIZAÇÃO DA TIPAGEM GLOBAL DO COMPONENTE PAI
 type UserProgress = {
   xp: number;
   streak: number;
-  lastCompletedDate: string | null;
+  completedDates: string[];
 };
 
 const STORAGE_KEY = "daily-quiz-progress";
@@ -28,7 +29,7 @@ const CYCLE_START_DATE = "2026-05-17";
 const defaultProgress: UserProgress = {
   xp: 0,
   streak: 0,
-  lastCompletedDate: null,
+  completedDates: [],
 };
 
 
@@ -84,8 +85,8 @@ export default function Page() {
 
   const questions = questionsForDate(currentDateKey);
 
-  const completedToday =
-    progress.lastCompletedDate === currentDateKey;
+  // 2. CORREÇÃO DA VALIDAÇÃO: Verifica de forma nativa dentro do array se hoje foi concluído
+  const completedToday = progress.completedDates.includes(currentDateKey);
 
   const dailyCompletion = completedToday
     ? 100
@@ -101,7 +102,15 @@ export default function Page() {
 
     if (saved) {
       try {
-        setProgress({ ...defaultProgress, ...JSON.parse(saved) });
+        const parsed = JSON.parse(saved);
+        
+        // Mantém retrocompatibilidade caso existam dados antigos no formato antigo de string única
+        if (parsed.lastCompletedDate && !parsed.completedDates) {
+          parsed.completedDates = [parsed.lastCompletedDate];
+          delete parsed.lastCompletedDate;
+        }
+
+        setProgress({ ...defaultProgress, ...parsed });
       } catch {
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -153,6 +162,12 @@ export default function Page() {
 
   function finishQuiz() {
     const today = currentDateKey;
+    const yesterday = previousDateKey(today);
+
+    console.log("=== DEBUG OFENSIVA ===");
+    console.log("Chave de Hoje:", today);
+    console.log("Chave de Ontem esperada:", yesterday);
+    console.log("Histórico de datas no estado:", progress.completedDates);
 
     const xpGained = completedToday
       ? 0
@@ -161,26 +176,39 @@ export default function Page() {
     setEarnedXp(xpGained);
 
     setProgress((prev) => {
-      const streak =
-        prev.lastCompletedDate === previousDateKey(today)
-          ? prev.streak + 1
-          : 1;
+      if (prev.completedDates.includes(today)) {
+        return prev;
+      }
+
+      const fezOntem = prev.completedDates.includes(yesterday);
+      console.log("Fez a atividade ontem?", fezOntem);
+
+      const streak = fezOntem ? prev.streak + 1 : 1;
+      console.log("Nova ofensiva calculada:", streak);
+
+      const completedDates = [...prev.completedDates, today];
 
       return {
         xp: prev.xp + xpGained,
         streak,
-        lastCompletedDate: today,
+        completedDates,
       };
     });
 
     setScreen("result");
   }
-
+  
   function goHome() {
     setScreen("home");
     setSelectedOption(null);
   }
 
+  // Cria um objeto compatível com telas antigas se for estritamente necessário (ex: ResultScreen antiga)
+  const legacyProgressAdapter = {
+    xp: progress.xp,
+    streak: progress.streak,
+    lastCompletedDate: progress.completedDates[progress.completedDates.length - 1] || null
+  };
 
   return (
     <main className="px-4 py-5 text-brand-ink sm:px-6">
@@ -190,6 +218,7 @@ export default function Page() {
           <HomeScreen
             completedToday={completedToday}
             dailyCompletion={dailyCompletion}
+            lessons={dadosDasLicoes}
             dayNumber={
               positiveModulo(
                 daysBetween(CYCLE_START_DATE, currentDateKey),
@@ -217,10 +246,13 @@ export default function Page() {
             accuracy={accuracy}
             correctAnswers={correctAnswers}
             earnedXp={earnedXp}
-            progress={progress}
+            // Injeta o adaptador contendo lastCompletedDate caso o seu ResultScreen ainda faça uso dessa chave
+            progress={{
+              ...legacyProgressAdapter,
+              ...({ completedDates: progress.completedDates } as any)
+            }}
             onHome={goHome}
             onRestart={startQuiz}
-            totalQuestions={questions.length}
           />
         )}
       </div>
