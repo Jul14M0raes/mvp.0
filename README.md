@@ -18,22 +18,24 @@
 
 ## Estrutura de pastas resumidas
 
+```txt
 /app
 ├── data
 │   └── questions.ts          # banco de questões
 │
 ├── components
 │   ├── Screens
-│   │   ├── HomeScreen.tsx    # tela inicial
-│   │   ├── QuizScreen.tsx    # lógica do quiz
-│   │   └── ResultsScreen.tsx # resultado e estatísticas
+│   │   ├── HomeScreen.tsx
+│   │   ├── QuizScreen.tsx
+│   │   └── ResultsScreen.tsx
 │   │
 │   └── ui
-│       ├── AudioButton.tsx   # transforma texto em áudio
-│       ├── MetricCard.tsx    # XP, ofensiva etc.
-│       ├── VisualIcon.tsx    # centraliza ícones do lucide-react
+│       ├── AudioButton.tsx
+│       ├── MetricCard.tsx
+│       ├── VisualIcon.tsx
 │       └── ProgressBar.tsx
 │
-└── page.tsx                  # arquivo principal da aplicação
+└── page.tsx
+```                 # arquivo principal da aplicação
 ## Anexos
 ICONES - https://lucide.dev/icons/
