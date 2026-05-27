@@ -18,19 +18,22 @@
 
 ## Estrutura de pastas resumidas
 
-/app (pasta principal do projeto)
-├── /data (armazena dados - provisório até implementação de um banco de dados)
-├──── questions.ts (banco de questões)
-├──page.tsx (Arquivo principal, chama as telas - que atualemnte estão na pasta "Screens" - e renderiza-as)
-├──/components
-├────/Screens (Armazena as telas como componentes)
-├────── HomeScreen.tsx (tela inicial, páigina "home")
-├────── QuizScreen.tsx (Lógica de questões modelo "quiz")
-├────── ResultsScreen ( Mostra o resultado e estátiscas da atividade feita para o usuário)
-├────/ui (Guarda itens de interface que podem ser reutilizados)
-├────── AudioButton.tsx (usa o navegador para transcrever texto em áudio)
-├────── MetricCard.tsx (Guarda parâmetros de estátisca como XP e dias de ofensiva)
-├────── Visualicon.tsx (Carrega os ícones que serão ultilizados no projeto, devendo ser importandos neste arquivos de "lucid-react")
-├────── ProgressBar.tsx 
+/app
+├── data
+│   └── questions.ts          # banco de questões
+│
+├── components
+│   ├── Screens
+│   │   ├── HomeScreen.tsx    # tela inicial
+│   │   ├── QuizScreen.tsx    # lógica do quiz
+│   │   └── ResultsScreen.tsx # resultado e estatísticas
+│   │
+│   └── ui
+│       ├── AudioButton.tsx   # transforma texto em áudio
+│       ├── MetricCard.tsx    # XP, ofensiva etc.
+│       ├── VisualIcon.tsx    # centraliza ícones do lucide-react
+│       └── ProgressBar.tsx
+│
+└── page.tsx                  # arquivo principal da aplicação
 ## Anexos
 ICONES - https://lucide.dev/icons/
