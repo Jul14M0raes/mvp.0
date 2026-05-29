@@ -46,3 +46,8 @@ Júlia M.
 Debora 
 Júlia L.
 Carlos M.
+
+## Pendencias 
+[] ajeitar as rotas das páginas
+[] colocar as páginas
+[] Melhorar a UI e a UX
